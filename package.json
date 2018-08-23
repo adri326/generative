@@ -1,11 +1,11 @@
 {
-  "name": "procedural",
+  "name": "generative",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generative, procedural, rule-based simulations.",
   "main": "index.js",
   "scripts": {
     "test": "node test/index.js"
   },
-  "author": "",
+  "author": "adri326",
   "license": "ISC"
 }

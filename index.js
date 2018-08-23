@@ -74,6 +74,22 @@ const Procedural = module.exports = class Procedural {
           }
         }
       }
+      else if (Array.isArray(rule.on)) { // multi-dimensional on
+        let step = (ctx, layer) => {
+          let objects = rule.on[layer](ctx);
+          for (let object of objects) {
+            if (layer === rule.on.length - 1) {
+              if (this.matchRule(rule, object)) {
+                result.push(new RuleWrapper(rule, object));
+              }
+            }
+            else {
+              step(object, layer + 1);
+            }
+          }
+        }
+        step(this.context, 0);
+      }
       else {
         if (this.matchRule(rule, this.context)) {
           result.push(rule);

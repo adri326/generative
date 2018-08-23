@@ -1,25 +1,25 @@
-const Procedural = require("../index");
+const Generative = require("../index");
 const assert = require("assert");
 
 // basic rule addition and filtering
 {
-  const p = new Procedural({});
-  assert.deepEqual(p.rules, []);
-  assert.deepEqual(p.getMatchingRules(), []);
+  const g = new Generative({});
+  assert.deepEqual(g.rules, []);
+  assert.deepEqual(g.getMatchingRules(), []);
   let r1 = {
     test: () => true
   };
-  p.addRule(r1);
-  assert.deepEqual(p.rules, [r1], "Procedural::addRule(...rules) error");
+  g.addRule(r1);
+  assert.deepEqual(g.rules, [r1], "Generative::addRule(...rules) error");
   let r2 = {
     test: () => false
   };
   let r3 = {
-    test: (context) => assert.equal(context, p.context, "Procedural.context should be given as argument to a rule's test closure") || 1
+    test: (context) => assert.equal(context, g.context, "Generative.context should be given as argument to a rule's test closure") || 1
   }
-  p.addRule(r2, r3);
-  assert.deepEqual(p.rules, [r1, r2, r3], "Procedural::addRule(...rules) error");
-  assert.deepEqual(p.getMatchingRules(), [r1, r3], "Procedural::getMatchingRules() error");
+  g.addRule(r2, r3);
+  assert.deepEqual(g.rules, [r1, r2, r3], "Generative::addRule(...rules) error");
+  assert.deepEqual(g.getMatchingRules(), [r1, r3], "Generative::getMatchingRules() error");
 }
 
 // rule execution
@@ -37,10 +37,10 @@ const assert = require("assert");
     }
   ];
 
-  const p = new Procedural({}, rules);
-  p.run();
+  const g = new Generative({}, rules);
+  g.run();
   assert.equal(success, true, "Rule A should've triggerred rule B");
-  p.removeRule("A").addRule({
+  g.removeRule("A").addRule({
     name: "C",
     action: success = false
   },
@@ -70,13 +70,13 @@ const assert = require("assert");
       action: (ctx) => ctx.rose = false
     }
   ];
-  let p = new Procedural(ctx, rules);
-  p.run();
-  assert.deepEqual(p.context, {rose: true, gardener: true});
-  p.run();
-  assert.deepEqual(p.context, {rose: false, gardener: true});
-  p.run().again();
-  assert.deepEqual(p.context, {rose: false, gardener: true});
+  let g = new Generative(ctx, rules);
+  g.run();
+  assert.deepEqual(g.context, {rose: true, gardener: true});
+  g.run();
+  assert.deepEqual(g.context, {rose: false, gardener: true});
+  g.run().again();
+  assert.deepEqual(g.context, {rose: false, gardener: true});
 }
 
 // output
@@ -113,17 +113,17 @@ const assert = require("assert");
       action: (ctx, out) => out.append("so the gardener can't pick it up anymore.", " ")
     }
   ];
-  const p = new Procedural(ctx, rules);
-  assert.equal(p.run().again("\n").get(), "Gardener enters the garden.\nThe Gardener picks the rose.");
-  assert.equal(p.run().get(), "Rose already picked, so the gardener can't pick it up anymore.");
+  const g = new Generative(ctx, rules);
+  assert.equal(g.run().again("\n").get(), "Gardener enters the garden.\nThe Gardener picks the rose.");
+  assert.equal(g.run().get(), "Rose already picked, so the gardener can't pick it up anymore.");
 
   console.log("> Here's a little story:");
   console.log();
-  p.setContext({
+  g.setContext({
     rose: true,
     gardener: false
   });
-  console.log(p.run().again("\n").again("\n").get());
+  console.log(g.run().again("\n").again("\n").get());
 }
 
 {
@@ -167,7 +167,7 @@ const assert = require("assert");
       action: (obj, out) => (obj.tired = true, out.append(`${obj.name} is tired.`, " "))
     }
   ];
-  const p = new Procedural(context, rules);
+  const g = new Generative(context, rules);
 
-  assert.equal(p.run().again("\n").again("\n").again("\n").get(), "Jack goes to sleep. Brad is tired.\nBrad goes to sleep. Jack isn't tired anymore.\nBrad isn't tired anymore. Jack wakes up.\nBrad wakes up. Jack is tired.");
+  assert.equal(g.run().again("\n").again("\n").again("\n").get(), "Jack goes to sleep. Brad is tired.\nBrad goes to sleep. Jack isn't tired anymore.\nBrad isn't tired anymore. Jack wakes up.\nBrad wakes up. Jack is tired.");
 }
